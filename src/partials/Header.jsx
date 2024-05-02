@@ -11,11 +11,11 @@ function Header({ sidebarOpen, setSidebarOpen }) {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 bg-white dark:bg-[#182235] border-b border-slate-200 dark:border-slate-700 z-30">
+    <header className="sticky top-0 left-0 bg-white dark:bg-[#182235] border-b border-slate-200 dark:border-slate-700 z-50 max-w-screen">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 -mb-px">
           {/* Header: Left side */}
-          <div className="flex">
+          <a href="/admin/dashboard" className="flex">
             {/* Hamburger button */}
             <button
               className="text-slate-500 hover:text-slate-600 lg:hidden"
@@ -41,13 +41,13 @@ function Header({ sidebarOpen, setSidebarOpen }) {
               <img
                 src={mitaliLogo}
                 alt="mitali-international"
-                className="h-12 w-12"
+                className="h-8 w-8"
               />
-              <span className="text-2xl font-bold">
+              <span className="text-xl font-bold">
                 Mitali International limited
               </span>
             </p>
-          </div>
+          </a>
 
           {/* Header: Right side */}
           <div className="flex items-center space-x-3">

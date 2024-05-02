@@ -1,50 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../../../config/firebase.config";
-import { collection, onSnapshot } from "firebase/firestore";
-import Loading from "../../../partials/Loading";
 import PageStructure from "../../../components/PageStructure";
 import CustomTable from "../../../components/Table";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../../config/firebase.config";
+import Loading from "../../../partials/Loading";
 
-const ViewDepartment = () => {
-  const [departments, setDepartments] = useState([]);
+const ViewShift = () => {
+  const [shifts, setShifts] = useState([]);
 
   useEffect(() => {
-    const departmentCollectionRef = collection(db, "departments");
+    const shiftCollectionRef = collection(db, "shift");
 
     // Real-time listener
-    const unsubscribe = onSnapshot(departmentCollectionRef, (querySnapshot) => {
-      const updatedDepartments = [];
+    const unsubscribe = onSnapshot(shiftCollectionRef, (querySnapshot) => {
+      const updatedPosition = [];
       querySnapshot.forEach((doc) => {
-        updatedDepartments.push({
+        updatedPosition.push({
           id: doc.id,
           ...doc.data(),
         });
       });
-      setDepartments(updatedDepartments);
+      setShifts(updatedPosition);
     });
 
     // Cleanup function for the listener
     return () => unsubscribe();
   }, []);
 
-  if (departments.length < 1) {
+  if (shifts.length < 1) {
     return <Loading />;
   }
-  const svg = (
+  const icon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="1em"
       height="1em"
-      viewBox="0 0 24 24"
-      className={`fill-current`}
+      viewBox="0 0 20 20"
     >
-      <g fill="none" fill-rule="evenodd">
-        <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-        <path
-          fill="currentColor"
-          d="M15 6a3.001 3.001 0 0 1-2 2.83V11h3a3 3 0 0 1 3 3v1.17a3.001 3.001 0 1 1-2 0V14a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v1.17a3.001 3.001 0 1 1-2 0V14a3 3 0 0 1 3-3h3V8.83A3.001 3.001 0 1 1 15 6m-3-1a1 1 0 1 0 0 2a1 1 0 0 0 0-2M6 17a1 1 0 1 0 0 2a1 1 0 0 0 0-2m12 0a1 1 0 1 0 0 2a1 1 0 0 0 0-2"
-        />
-      </g>
+      <path
+        fill="currentColor"
+        d="M10 6.5a.5.5 0 0 0-1 0v4a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 0-1H10zM6 3a3 3 0 0 0-3 3v4.104a2.8 2.8 0 0 1 1-.093V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3.092q.091.301.092.625a3 3 0 0 1-.025.375H14a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zM3.75 14.5a1.75 1.75 0 1 0 0-3.5a1.75 1.75 0 0 0 0 3.5M4 19c2.143 0 3-1.098 3-2.187c0-.725-.576-1.313-1.286-1.313H2.286c-.71 0-1.286.588-1.286 1.313C1 17.906 1.857 19 4 19m3.5-.5h-.023A2.95 2.95 0 0 0 8 16.813c0-.484-.148-.938-.404-1.313H8.93c.592 0 1.071.504 1.071 1.125c0 .934-.714 1.875-2.5 1.875m.25-4a1.25 1.25 0 1 0 0-2.5a1.25 1.25 0 0 0 0 2.5"
+      />
     </svg>
   );
 
@@ -54,10 +50,10 @@ const ViewDepartment = () => {
         SN
       </th>
       <th scope="col" class="px-6 py-3">
-        Department Name
+        Shift Name
       </th>
       <th scope="col" class="px-6 py-3">
-        Description
+        Schedule
       </th>
       <th scope="col" class="px-6 py-3">
         Edit
@@ -67,7 +63,7 @@ const ViewDepartment = () => {
       </th>
     </tr>
   );
-  const tableBody = departments.map((department, i) => {
+  const tableBody = shifts.map((shift, i) => {
     return (
       <tr class="bg-white border-b">
         <td className="px-6 py-4 border-r">{i + 1}</td>
@@ -75,9 +71,9 @@ const ViewDepartment = () => {
           scope="row"
           class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap border-r "
         >
-          {department.name}
+          {shift.name}
         </th>
-        <td class="px-6 py-4  border-r">{department.description}</td>
+        <td class="px-6 py-4  border-r">{shift.schedule}</td>
         <td class="px-6 py-4 text-blue-500  border-r">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -111,12 +107,11 @@ const ViewDepartment = () => {
       </tr>
     );
   });
-
   return (
-    <PageStructure icon={svg} title={"All Departments"}>
+    <PageStructure icon={icon} title={"All Sifts"}>
       <CustomTable tableHead={tableHead} tableBody={tableBody} />
     </PageStructure>
   );
 };
 
-export default ViewDepartment;
+export default ViewShift;

@@ -1,50 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../../../config/firebase.config";
-import { collection, onSnapshot } from "firebase/firestore";
-import Loading from "../../../partials/Loading";
 import PageStructure from "../../../components/PageStructure";
 import CustomTable from "../../../components/Table";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../../config/firebase.config";
+import Loading from "../../../partials/Loading";
 
-const ViewDepartment = () => {
-  const [departments, setDepartments] = useState([]);
+const ViewPosition = () => {
+  const [positions, setPositions] = useState([]);
 
   useEffect(() => {
-    const departmentCollectionRef = collection(db, "departments");
+    const roleCollectionRef = collection(db, "position");
 
     // Real-time listener
-    const unsubscribe = onSnapshot(departmentCollectionRef, (querySnapshot) => {
-      const updatedDepartments = [];
+    const unsubscribe = onSnapshot(roleCollectionRef, (querySnapshot) => {
+      const updatedPosition = [];
       querySnapshot.forEach((doc) => {
-        updatedDepartments.push({
+        updatedPosition.push({
           id: doc.id,
           ...doc.data(),
         });
       });
-      setDepartments(updatedDepartments);
+      setPositions(updatedPosition);
     });
 
     // Cleanup function for the listener
     return () => unsubscribe();
   }, []);
 
-  if (departments.length < 1) {
+  if (positions.length < 1) {
     return <Loading />;
   }
-  const svg = (
+  const icon = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="1em"
       height="1em"
       viewBox="0 0 24 24"
-      className={`fill-current`}
     >
-      <g fill="none" fill-rule="evenodd">
-        <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-        <path
-          fill="currentColor"
-          d="M15 6a3.001 3.001 0 0 1-2 2.83V11h3a3 3 0 0 1 3 3v1.17a3.001 3.001 0 1 1-2 0V14a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v1.17a3.001 3.001 0 1 1-2 0V14a3 3 0 0 1 3-3h3V8.83A3.001 3.001 0 1 1 15 6m-3-1a1 1 0 1 0 0 2a1 1 0 0 0 0-2M6 17a1 1 0 1 0 0 2a1 1 0 0 0 0-2m12 0a1 1 0 1 0 0 2a1 1 0 0 0 0-2"
-        />
-      </g>
+      <path
+        fill="currentColor"
+        d="M4 20v-4.5h16V20zm12.115-5.5V4H20v10.5zM4 14.5V4h3.885v10.5zm4.885 0V4h6.23v10.5z"
+      />
     </svg>
   );
 
@@ -54,10 +50,10 @@ const ViewDepartment = () => {
         SN
       </th>
       <th scope="col" class="px-6 py-3">
-        Department Name
+        Position Name
       </th>
       <th scope="col" class="px-6 py-3">
-        Description
+        Responsibilities
       </th>
       <th scope="col" class="px-6 py-3">
         Edit
@@ -67,7 +63,7 @@ const ViewDepartment = () => {
       </th>
     </tr>
   );
-  const tableBody = departments.map((department, i) => {
+  const tableBody = positions.map((position, i) => {
     return (
       <tr class="bg-white border-b">
         <td className="px-6 py-4 border-r">{i + 1}</td>
@@ -75,9 +71,9 @@ const ViewDepartment = () => {
           scope="row"
           class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap border-r "
         >
-          {department.name}
+          {position.name}
         </th>
-        <td class="px-6 py-4  border-r">{department.description}</td>
+        <td class="px-6 py-4  border-r">{position.responsibilities}</td>
         <td class="px-6 py-4 text-blue-500  border-r">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -111,12 +107,11 @@ const ViewDepartment = () => {
       </tr>
     );
   });
-
   return (
-    <PageStructure icon={svg} title={"All Departments"}>
+    <PageStructure icon={icon} title={"All Positions"}>
       <CustomTable tableHead={tableHead} tableBody={tableBody} />
     </PageStructure>
   );
 };
 
-export default ViewDepartment;
+export default ViewPosition;

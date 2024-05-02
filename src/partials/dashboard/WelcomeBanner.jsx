@@ -1,6 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 function WelcomeBanner() {
+  const [greeting, setGreeting] = useState("");
+  useEffect(() => {
+    const determineGreeting = () => {
+      const currentTime = new Date();
+      const currentHour = currentTime.getHours();
+
+      if (currentHour >= 5 && currentHour < 12) {
+        setGreeting("Good morning");
+      } else if (currentHour >= 12 && currentHour < 17) {
+        setGreeting("Good afternoon");
+      } else {
+        setGreeting("Good evening");
+      }
+    };
+
+    determineGreeting();
+    const intervalId = setInterval(determineGreeting, 3600000);
+
+    return () => clearInterval(intervalId);
+  }, []);
   return (
     <div className="relative bg-indigo-200 dark:bg-indigo-500 p-4 sm:p-6 rounded-sm overflow-hidden mb-8">
       {/* Background illustration */}
@@ -69,9 +89,9 @@ function WelcomeBanner() {
       {/* Content */}
       <div className="relative">
         <h1 className="text-2xl md:text-3xl text-slate-800 dark:text-slate-100 font-bold mb-1">
-          Good afternoon, Admin. 👋
+          {greeting}, Admin. 👋
         </h1>
-        <p className="dark:text-indigo-200">
+        <p className="text-black ">
           Mitali International Limited Staff Management Panel
         </p>
       </div>

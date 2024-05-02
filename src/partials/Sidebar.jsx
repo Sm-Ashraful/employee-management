@@ -3,17 +3,17 @@ import { NavLink, useLocation } from "react-router-dom";
 
 import SidebarLinkGroup from "./SidebarLinkGroup";
 
-function Sidebar({ sidebarOpen, setSidebarOpen }) {
+function Sidebar({
+  sidebarOpen,
+  setSidebarOpen,
+  setSidebarExpanded,
+  sidebarExpanded,
+}) {
   const location = useLocation();
   const { pathname } = location;
 
   const trigger = useRef(null);
   const sidebar = useRef(null);
-
-  const storedSidebarExpanded = localStorage.getItem("sidebar-expanded");
-  const [sidebarExpanded, setSidebarExpanded] = useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
-  );
 
   // close on click outside
   useEffect(() => {
@@ -50,6 +50,8 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
     }
   }, [sidebarExpanded]);
 
+  console.log("Sidebar expended: ", sidebarExpanded);
+
   return (
     <div className="overflow-hidden ">
       {/* Sidebar backdrop (mobile only) */}
@@ -64,10 +66,30 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
       <div
         id="sidebar"
         ref={sidebar}
-        className={` flex flex-col fixed z-40 left-0 top-0 h-screen  lg:left-auto lg:top-auto lg:translate-x-0  overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 lg:w-20 lg:sidebar-expanded:!w-64 2xl:!w-64 shrink-0 bg-slate-800 p-4 transition-all duration-200 ease-in-out ${
+        className={` flex flex-col fixed z-40 left-0 top-0  lg:left-auto lg:top-auto lg:translate-x-0  overflow-y-scroll lg:overflow-y-auto no-scrollbar w-64 lg:w-20 lg:sidebar-expanded:!w-64 2xl:!w-64 shrink-0 bg-slate-800 p-4 transition-all duration-200 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-64"
         }`}
+        style={{
+          height: "calc(100vh - 40px)",
+        }}
       >
+        <div className="pt-3 hidden lg:inline-flex 2xl:hidden justify-end">
+          <div className="px-3 py-2">
+            <button onClick={() => setSidebarExpanded(!sidebarExpanded)}>
+              <span className="sr-only">Expand / collapse sidebar</span>
+              <svg
+                className="w-6 h-6 fill-current sidebar-expanded:rotate-180"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  className="text-slate-400"
+                  d="M19.586 11l-5-5L16 4.586 23.414 12 16 19.414 14.586 18l5-5H7v-2z"
+                />
+                <path className="text-slate-600" d="M3 23H1V1h2z" />
+              </svg>
+            </button>
+          </div>
+        </div>
         {/* Sidebar header */}
         <div className="flex justify-between mb-5 pr-3 sm:px-2 overflow-y-auto">
           {/* Close button */}
@@ -370,7 +392,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                         <li className="mb-1 last:mb-0">
                                           <NavLink
                                             end
-                                            to="/user/view-employees"
+                                            to="/admin/user/view-employees"
                                             className={({ isActive }) =>
                                               "block transition duration-150 truncate " +
                                               (isActive
@@ -386,7 +408,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                         <li className="mb-1 last:mb-0">
                                           <NavLink
                                             end
-                                            to="/user/create-employee"
+                                            to="/admin/user/create-employee"
                                             className={({ isActive }) =>
                                               "block transition duration-150 truncate " +
                                               (isActive
@@ -455,7 +477,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                         <li className="mb-1 last:mb-0">
                                           <NavLink
                                             end
-                                            to="/user/role"
+                                            to="/admin/user/view-role"
                                             className={({ isActive }) =>
                                               "block transition duration-150 truncate " +
                                               (isActive
@@ -471,7 +493,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                         <li className="mb-1 last:mb-0">
                                           <NavLink
                                             end
-                                            to="/user/create-employee"
+                                            to="/admin/user/create-role"
                                             className={({ isActive }) =>
                                               "block transition duration-150 truncate " +
                                               (isActive
@@ -480,7 +502,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                             }
                                           >
                                             <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                              Create Roles
+                                              Create Role
                                             </span>
                                           </NavLink>
                                         </li>
@@ -493,7 +515,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           </li>
                           <li className="mb-1 last:mb-0">
                             <SidebarLinkGroup
-                              activecondition={pathname.includes("permission")}
+                              activecondition={pathname.includes("position")}
                             >
                               {(handleClick, open) => {
                                 return (
@@ -501,7 +523,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                     <a
                                       href="#0"
                                       className={`block text-slate-200 truncate transition duration-150 ${
-                                        pathname.includes("permission")
+                                        pathname.includes("position")
                                           ? "hover:text-slate-200"
                                           : "hover:text-white"
                                       }`}
@@ -515,7 +537,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                       <div className="flex items-center justify-between">
                                         <div className="flex items-center">
                                           <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                            Permission
+                                            Position
                                           </span>
                                         </div>
                                         {/* Icon */}
@@ -540,7 +562,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                         <li className="mb-1 last:mb-0">
                                           <NavLink
                                             end
-                                            to="/user/permission"
+                                            to="/admin/user/view-position"
                                             className={({ isActive }) =>
                                               "block transition duration-150 truncate " +
                                               (isActive
@@ -549,14 +571,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                             }
                                           >
                                             <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                              View Permission
+                                              View position
                                             </span>
                                           </NavLink>
                                         </li>
                                         <li className="mb-1 last:mb-0">
                                           <NavLink
                                             end
-                                            to="/user/create-permission"
+                                            to="/admin/user/create-position"
                                             className={({ isActive }) =>
                                               "block transition duration-150 truncate " +
                                               (isActive
@@ -565,7 +587,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                             }
                                           >
                                             <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                              Create Permission
+                                              Create Position
                                             </span>
                                           </NavLink>
                                         </li>
@@ -576,6 +598,27 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               }}
                             </SidebarLinkGroup>
                           </li>
+
+                          <li
+                            className={`px-3 py-2 rounded-sm mb-0.5 last:mb-0 ml-3 ${
+                              pathname.includes("attendance") && "bg-slate-900"
+                            }`}
+                          >
+                            <NavLink
+                              end
+                              to="/admin/user/attendance"
+                              className={({ isActive }) =>
+                                "block transition duration-150 truncate " +
+                                (isActive
+                                  ? "text-indigo-500"
+                                  : "text-slate-400 hover:text-slate-200")
+                              }
+                            >
+                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                View Attendance
+                              </span>
+                            </NavLink>
+                          </li>
                         </ul>
                       </div>
                     </React.Fragment>
@@ -584,14 +627,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               </SidebarLinkGroup>
 
               {/* Job Board */}
-              <SidebarLinkGroup activecondition={pathname.includes("job")}>
+              <SidebarLinkGroup activecondition={pathname.includes("shift")}>
                 {(handleClick, open) => {
                   return (
                     <React.Fragment>
                       <a
                         href="#0"
                         className={`block text-slate-200 truncate transition duration-150 ${
-                          pathname.includes("job")
+                          pathname.includes("shift")
                             ? "hover:text-slate-200"
                             : "hover:text-white"
                         }`}
@@ -611,7 +654,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                             >
                               <path
                                 className={`fill-current ${
-                                  pathname.includes("job")
+                                  pathname.includes("shift")
                                     ? "text-indigo-600"
                                     : "text-slate-700"
                                 }`}
@@ -620,7 +663,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               />
                               <path
                                 className={`fill-current ${
-                                  pathname.includes("job")
+                                  pathname.includes("shift")
                                     ? "text-indigo-600"
                                     : "text-slate-700"
                                 }`}
@@ -650,7 +693,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
-                              to="/job/job-listing"
+                              to="/admin/shift/create-shift"
                               className={({ isActive }) =>
                                 "block transition duration-150 truncate " +
                                 (isActive
@@ -659,14 +702,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               }
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Day Shift
+                                Create Shift
                               </span>
                             </NavLink>
                           </li>
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
-                              to="/job/job-post"
+                              to="/admin/shift/view-shift"
                               className={({ isActive }) =>
                                 "block transition duration-150 truncate " +
                                 (isActive
@@ -675,7 +718,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                               }
                             >
                               <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Night Shift
+                                View Shift
                               </span>
                             </NavLink>
                           </li>
@@ -852,23 +895,6 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
         </div>
 
         {/* Expand / collapse button */}
-        <div className="pt-3 hidden lg:inline-flex 2xl:hidden justify-end mt-auto">
-          <div className="px-3 py-2">
-            <button onClick={() => setSidebarExpanded(!sidebarExpanded)}>
-              <span className="sr-only">Expand / collapse sidebar</span>
-              <svg
-                className="w-6 h-6 fill-current sidebar-expanded:rotate-180"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  className="text-slate-400"
-                  d="M19.586 11l-5-5L16 4.586 23.414 12 16 19.414 14.586 18l5-5H7v-2z"
-                />
-                <path className="text-slate-600" d="M3 23H1V1h2z" />
-              </svg>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Sidebar from "../../partials/Sidebar";
 import Header from "../../partials/Header";
@@ -19,7 +19,6 @@ import DashboardCard10 from "../../partials/dashboard/DashboardCard10";
 import DashboardCard11 from "../../partials/dashboard/DashboardCard11";
 import DashboardCard12 from "../../partials/dashboard/DashboardCard12";
 import DashboardCard13 from "../../partials/dashboard/DashboardCard13";
-import Banner from "../../partials/Banner";
 import AdminLayout from "../../UI/Layout/AdminLayout";
 import { useUserContext } from "../../context/UserContext";
 import DashboardBannerCard from "../../partials/dashboard/DashboardBannerCard";
@@ -29,8 +28,27 @@ import userIcon from "../../images/user-svg-icon.svg";
 import departmentIcon from "../../images/department-icon.svg";
 import noticeIcon from "../../images/notice-icon.svg";
 import leaveIcon from "../../images/leave-icon.svg";
+import { AllEmployeeList } from "../../utils/Healper";
+import { useEmployeeContext } from "../../context/EmployeeContext";
 
 function Dashboard() {
+  const storedUserString = sessionStorage.getItem("user");
+  const { employee } = useEmployeeContext();
+
+  const user = JSON.parse(storedUserString);
+
+  if (!employee) {
+    return (
+      <div className="h-screen w-screen flex justify-center items-center">
+        <img
+          src="/public/Dual Ball@1x-1.0s-200px-200px.gif"
+          alt="loading"
+          className="w-14 h-14"
+        />
+      </div>
+    );
+  }
+
   return (
     <AdminLayout>
       {/* Sidebar */}
@@ -51,7 +69,7 @@ function Dashboard() {
                 title={"user/staff"}
                 bgColor={"bg-blue-500"}
                 icon={userIcon}
-                totalCount={50}
+                totalCount={employee.length}
               />
               <DashboardBannerCard
                 title={"Department"}
@@ -71,6 +89,16 @@ function Dashboard() {
                 icon={leaveIcon}
                 totalCount={6}
               />
+            </div>
+            <div className="bg-yellow-500 mb-8 px-4 py-5">
+              <h3 className="text-2xl font-bold text-white pb-5 ">
+                My Details
+              </h3>
+              <div className="text-white space-y-3 font-medium">
+                <p>Name: {user.name}</p>
+                <p>Email: {user.email}</p>
+                <p>Role: {user.type}</p>
+              </div>
             </div>
 
             {/* Cards */}

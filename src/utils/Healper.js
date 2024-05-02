@@ -13,7 +13,7 @@ import { db } from "../config/firebase.config";
 import { format } from "date-fns";
 
 export async function generateJobIdNumber(type, shift) {
-  const prefix = shift === "night-shift" ? "MN" : "MD";
+  const prefix = "MIL";
   const docRef = doc(db, "employees", prefix);
   let currentCount;
 
@@ -23,7 +23,7 @@ export async function generateJobIdNumber(type, shift) {
     if (docSnap.exists()) {
       currentCount = docSnap.data().count;
     } else {
-      currentCount = prefix === "MN" ? 11000 : 10000;
+      currentCount = 11000;
       await setDoc(docRef, { count: currentCount }); // Initialize if not exists
     }
 

@@ -69,7 +69,7 @@ function Dashboard() {
                 title={"user/staff"}
                 bgColor={"bg-blue-500"}
                 icon={userIcon}
-                totalCount={employee.length}
+                totalCount={employee?.length}
               />
               <DashboardBannerCard
                 title={"Department"}

@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../config/firebase.config";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import Loading from "../../../partials/Loading";
 import PageStructure from "../../../components/PageStructure";
 import CustomTable from "../../../components/Table";
+import EditModal from "../../../partials/Model";
+import AlertBox from "../../../partials/Model/Alert";
 
 const ViewDepartment = () => {
   const [departments, setDepartments] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+  const [dataToRemove, setDataToRemove] = React.useState(null);
+  const [modalData, setModalData] = useState(null);
+
+  const handleClickOpen = () => {
+    setOpenAlert(true);
+  };
+
+  const handleOpen = () => setOpen(true);
 
   useEffect(() => {
     const departmentCollectionRef = collection(db, "departments");
@@ -67,6 +79,23 @@ const ViewDepartment = () => {
       </th>
     </tr>
   );
+
+  const handleEditingDepartment = (department) => {
+    setModalData(department);
+    handleOpen();
+  };
+  const handleOpenAlertBox = (data) => {
+    setDataToRemove(data);
+    handleClickOpen();
+  };
+
+  const handleDeleteDepartment = async (e, department) => {
+    e.preventDefault();
+    const departmentRef = doc(db, "departments", department.id);
+    await deleteDoc(departmentRef);
+    setOpenAlert(false);
+  };
+
   const tableBody = departments.map((department, i) => {
     return (
       <tr class="bg-white border-b">
@@ -78,7 +107,10 @@ const ViewDepartment = () => {
           {department.name}
         </th>
         <td class="px-6 py-4  border-r">{department.description}</td>
-        <td class="px-6 py-4 text-blue-500  border-r">
+        <td
+          class="px-6 py-4 text-blue-500  border-r cursor-pointer"
+          onClick={() => handleEditingDepartment(department)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="1em"
@@ -95,7 +127,10 @@ const ViewDepartment = () => {
             />
           </svg>
         </td>
-        <td class="px-6 py-4 text-red-500 border-r">
+        <td
+          class="px-6 py-4 text-red-500 border-r cursor-pointer"
+          onClick={() => handleOpenAlertBox(department)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="1em"
@@ -115,6 +150,20 @@ const ViewDepartment = () => {
   return (
     <PageStructure icon={svg} title={"All Departments"}>
       <CustomTable tableHead={tableHead} tableBody={tableBody} />
+
+      <EditModal
+        key={modalData?.id}
+        open={open}
+        data={modalData}
+        setOpen={setOpen}
+      />
+      <AlertBox
+        key={dataToRemove?.id}
+        data={dataToRemove}
+        open={openAlert}
+        setOpen={setOpenAlert}
+        handleDeleteSubmit={handleDeleteDepartment}
+      />
     </PageStructure>
   );
 };

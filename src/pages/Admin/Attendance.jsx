@@ -19,12 +19,12 @@ import {
 import AttendanceSheet from "../../utils/AttendanceCalendaer";
 import PageStructure from "../../components/PageStructure";
 import Datepicker from "../../components/Datepicker";
+import { db } from "../../config/firebase.config";
+import DataTable from "../../partials/DataTables/DataTable";
 //  where("date", "==", todayDateString)
 export default function AttendanceReport() {
   const [employeeList, setEmployeeList] = useState([]);
-
-  const dayShift = [];
-  const nightShift = [];
+  const [shifts, setShifts] = useState([]);
 
   useEffect(() => {
     const fetchEmployeeList = async () => {
@@ -41,12 +41,32 @@ export default function AttendanceReport() {
     fetchEmployeeList();
   }, []);
 
+  useEffect(() => {
+    const shiftCollectionRef = collection(db, "shift");
+
+    // Real-time listener
+    const unsubscribe = onSnapshot(shiftCollectionRef, (querySnapshot) => {
+      const updatedPosition = [];
+      querySnapshot.forEach((doc) => {
+        updatedPosition.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setShifts(updatedPosition);
+    });
+
+    // Cleanup function for the listener
+    return () => unsubscribe();
+  }, []);
+
   const totalDayShift = employeeList.filter(
-    (employee) => employee.shift === "day-shift"
+    (employee) => employee.shift === "Day Shift"
   );
   const totalNightShift = employeeList.filter(
-    (employee) => employee.shift === "night-shift"
+    (employee) => employee.shift === "Night Shift"
   );
+  console.log("Total employee shift: ", totalDayShift, totalNightShift);
 
   const svg = (
     <svg
@@ -61,9 +81,6 @@ export default function AttendanceReport() {
       />
     </svg>
   );
-  // <div className="pt-5 grid w-full overflow-x-auto">
-  //   <AttendanceSheet data={totalNightShift} />;
-  // </div>;
 
   // <h4 className="text-xl  text-center font-semibold">
   //   Total Active Employee: {employeeList.length}
@@ -83,6 +100,20 @@ export default function AttendanceReport() {
     </svg>
   );
 
+  const nightIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+    >
+      <path
+        fill="currentColor"
+        d="M13.1 22q-1.888 0-3.543-.713t-2.892-1.951t-1.951-2.893T4 12.9q0-2.92 1.68-5.265t4.436-3.27q-.104 2.34.717 4.501q.82 2.161 2.48 3.82q1.66 1.66 3.82 2.481t4.502.717q-.92 2.754-3.268 4.435T13.1 22"
+      />
+    </svg>
+  );
+
   return (
     <PageStructure icon={svg} title={"Attendance Record"}>
       <div className="bg-white text-black px-4 min-h-[13rem]">
@@ -91,16 +122,39 @@ export default function AttendanceReport() {
             {dayIcon}
             Day shift attendance record
           </span>
+          <div className="flex gap-5">
+            <p className="text-base font-semibold">Estimated Time:</p>
+            <p className="text-base font-semibold text-red-600">
+              {shifts.map(
+                (shift) => shift.name === "Day Shift" && shift.schedule
+              )}
+            </p>
+          </div>
+
           <Datepicker align={"right"} />
         </h4>
         <hr />
+        <DataTable data={totalDayShift} />
       </div>
-
-      <div className="w-full py-10 overflow-hidden">
-        <h4 className="text-xl font-semibold pb-2">
-          Night Shift({totalNightShift.length})
+      <div className="bg-white text-black px-4 min-h-[13rem] mt-10">
+        <h4 className="flex items-center justify-between text-xl font-semibold pb-2 py-4 ">
+          <span className="flex items-center">
+            {nightIcon}
+            Night Shift attendance record
+          </span>
+          <div className="flex gap-5">
+            <p className="text-base font-semibold">Estimated Time:</p>
+            <p className="text-base font-semibold text-red-600">
+              {shifts.map(
+                (shift) => shift.name === "Night Shift" && shift.schedule
+              )}
+            </p>
+          </div>
+          <Datepicker align={"right"} />
         </h4>
         <hr />
+
+        <div className="pt-5 grid w-full overflow-x-auto"></div>
       </div>
     </PageStructure>
   );

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../config/firebase.config";
-import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import Loading from "../../../partials/Loading";
 import PageStructure from "../../../components/PageStructure";
 import CustomTable from "../../../components/Table";
@@ -13,6 +19,11 @@ const ViewDepartment = () => {
   const [openAlert, setOpenAlert] = React.useState(false);
   const [dataToRemove, setDataToRemove] = React.useState(null);
   const [modalData, setModalData] = useState(null);
+
+  const [name, setName] = React.useState(modalData?.name || "");
+  const [description, setDescription] = React.useState(
+    modalData?.description || ""
+  );
 
   const handleClickOpen = () => {
     setOpenAlert(true);
@@ -38,6 +49,11 @@ const ViewDepartment = () => {
     // Cleanup function for the listener
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setName(modalData?.name || "");
+    setDescription(modalData?.description || "");
+  }, [modalData]);
 
   if (departments.length < 1) {
     return <Loading />;
@@ -147,6 +163,25 @@ const ViewDepartment = () => {
     );
   });
 
+  const handleClose = () => {
+    setOpen(false);
+    setName(""); // Reset name
+    setDescription("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const departmentRef = doc(db, "departments", modalData?.id);
+    try {
+      await updateDoc(departmentRef, { name, description });
+      console.log("Department updated successfully");
+      handleClose();
+      // setIsEditing(false); // Close modal or similar
+    } catch (error) {
+      console.error("Error updating department:", error);
+    }
+  };
+
   return (
     <PageStructure icon={svg} title={"All Departments"}>
       <CustomTable tableHead={tableHead} tableBody={tableBody} />
@@ -154,9 +189,42 @@ const ViewDepartment = () => {
       <EditModal
         key={modalData?.id}
         open={open}
-        data={modalData}
-        setOpen={setOpen}
-      />
+        handleClose={handleClose}
+        handleSubmit={handleSubmit}
+      >
+        <div className="mb-5">
+          <label
+            htmlFor="email"
+            className="block mb-2 text-sm font-medium text-gray-900 "
+          >
+            Department Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            required
+          />
+        </div>
+        <div className="mb-5">
+          <label
+            htmlFor="department"
+            className="block mb-2 text-sm font-medium text-gray-900 "
+          >
+            Description
+          </label>
+          <textarea
+            row={6}
+            type="text"
+            id="department"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          />
+        </div>
+      </EditModal>
       <AlertBox
         key={dataToRemove?.id}
         data={dataToRemove}
